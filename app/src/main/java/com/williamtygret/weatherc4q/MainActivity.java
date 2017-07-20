@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         urlWeather = "http://api.aerisapi.com/forecasts/11101?client_id=5k40NwxrzVaGeYSxkLlQ1&client_secret=Nrx4miNPZg8KKsA6zPjUeMZWDWBrrHMLpyqXwmm4";
 
         mForecasts = new ArrayList<Forecast>();
-        
+
 
         mForecastAdapter = new ForecastAdapter(this, mForecasts);
 
@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         int maxTemp;
         int minTemp;
         String date;
+        String icon;
         JSONObject theObject;
 
 
@@ -98,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
         String dateForecast;
         int maxForecast;
         int minForecast;
+        String iconForecast;
 
 
         @Override
@@ -132,11 +134,17 @@ public class MainActivity extends AppCompatActivity {
                     dateForecast = theObject.getString("validTime");
                     maxForecast = theObject.getInt("maxTempF");
                     minForecast = theObject.getInt("minTempF");
+                    iconForecast = theObject.getString("icon");
+
+                    if(dateForecast.length()>10){
+                        dateForecast = dateForecast.substring(0,10);
+                    }
 
                     Forecast coolGuyForecast = new Forecast("",0,0,null);
                     coolGuyForecast.setDay(dateForecast);
                     coolGuyForecast.setHigh(maxForecast);
                     coolGuyForecast.setLow(minForecast);
+                    coolGuyForecast.setWeatherIcon(iconForecast);
 
                     mForecasts.add(coolGuyForecast);
 
@@ -149,6 +157,11 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("max1","maxtemp right now is: "+maxTemp);
                 minTemp = firstObj.getInt("minTempF");
                 date = firstObj.getString("validTime");
+                icon = firstObj.getString("icon");
+                if(date.length()>10){
+                    date = date.substring(0,10);
+                }
+
 
 
                 for(int counter=0;counter<itemsArray.length();counter++){
@@ -180,6 +193,8 @@ public class MainActivity extends AppCompatActivity {
             mHighViewerTextView.setText("High:" + maxTemp);
             mLowViewerTextView.setText("Low:" + minTemp);
             mDayViewerTextView.setText(date);
+
+            //mImageViewViewer.setImageResource();
 
 
 

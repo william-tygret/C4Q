@@ -11,11 +11,9 @@ public class Forecast {
         String mDay;
         int mHigh;
         int mLow;
+        String mWeatherIcon;
 
-
-        Image mWeatherIcon;
-
-        public Forecast(String day, int high, int low, Image weatherIcon){
+        public Forecast(String day, int high, int low, String weatherIcon){
             this.mDay = day;
             this.mHigh = high;
             this.mLow = low;
@@ -44,11 +42,11 @@ public class Forecast {
             mLow = low;
         }
 
-        public Image getWeatherIcon() {
+        public String getWeatherIcon() {
             return mWeatherIcon;
         }
 
-        public void setWeatherIcon(Image weatherIcon) {
+        public void setWeatherIcon(String weatherIcon) {
             mWeatherIcon = weatherIcon;
         }
 
