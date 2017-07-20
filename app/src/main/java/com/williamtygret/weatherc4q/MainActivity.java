@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     ListView mListView;
     ArrayList<Forecast> mForecasts;
+    ForecastAdapter mForecastAdapter;
     FrameLayout mFrameLayout;
     TextView mDayViewerTextView;
     TextView mHighViewerTextView;
@@ -54,16 +55,11 @@ public class MainActivity extends AppCompatActivity {
         urlWeather = "http://api.aerisapi.com/forecasts/11101?client_id=5k40NwxrzVaGeYSxkLlQ1&client_secret=Nrx4miNPZg8KKsA6zPjUeMZWDWBrrHMLpyqXwmm4";
 
         mForecasts = new ArrayList<Forecast>();
+        
 
-        mForecasts.add(new Forecast("Monday", 0, 0, null));
-        mForecasts.add(new Forecast("Tuesday", 0, 0, null));
-        mForecasts.add(new Forecast("Wednesday",0,0,null));
-        mForecasts.add(new Forecast("Thursday",0,0,null));
-        mForecasts.add(new Forecast("Friday",0,0,null));
+        mForecastAdapter = new ForecastAdapter(this, mForecasts);
 
-        ForecastAdapter adapter = new ForecastAdapter(this, mForecasts);
-
-        mListView.setAdapter(adapter);
+        mListView.setAdapter(mForecastAdapter);
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -133,7 +129,20 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject theObject = periods.getJSONObject(counter);
                     Log.d("theobject","this should be an array of data: "+theObject);
 
-                };
+                    dateForecast = theObject.getString("validTime");
+                    maxForecast = theObject.getInt("maxTempF");
+                    minForecast = theObject.getInt("minTempF");
+
+                    Forecast coolGuyForecast = new Forecast("",0,0,null);
+                    coolGuyForecast.setDay(dateForecast);
+                    coolGuyForecast.setHigh(maxForecast);
+                    coolGuyForecast.setLow(minForecast);
+
+                    mForecasts.add(coolGuyForecast);
+
+                    Log.d("coolguy","cool guy forecast is: "+coolGuyForecast);
+
+                }
                 JSONObject firstObj = periods.getJSONObject(0);
                 Log.d("zerospace","the first object in the array is:" +firstObj);
                 maxTemp = firstObj.getInt("maxTempF");
@@ -144,14 +153,14 @@ public class MainActivity extends AppCompatActivity {
 
                 for(int counter=0;counter<itemsArray.length();counter++){
                     theObject = itemsArray.optJSONObject(counter);
+                    Log.d("theObject","the object is: "+theObject);
 //                    dateArray.add(theObject.getString("validTime"));
 //                    maxArray.add(theObject.getInt("maxTempF"));
 //                    minArray.add(theObject.getInt("minTempF"));
-                    dateForecast = theObject.getString("validTime").toString();
+                    dateForecast = theObject.getString("validTime");
                     maxForecast = theObject.getInt("maxTempF");
                     minForecast = theObject.getInt("minTempF");
                     //mForecasts.add(dateForecast,maxForecast,minForecast,null);
-
 
 
                 }
@@ -174,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-            //mAdapter.notifyDataSetChanged();
+            mForecastAdapter.notifyDataSetChanged();
 
         }
 
