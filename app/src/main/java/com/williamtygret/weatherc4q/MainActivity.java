@@ -1,6 +1,8 @@
 package com.williamtygret.weatherc4q;
 
+
 import android.os.AsyncTask;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,9 +22,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,8 +40,10 @@ public class MainActivity extends AppCompatActivity {
     TextView mHighViewerTextView;
     TextView mLowViewerTextView;
     ImageView mImageViewViewer;
+    TextView mDescText;
 
-    Button mButton;
+    ImageView mImageView;
+
 
     private String urlWeather;
 
@@ -51,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
         mHighViewerTextView = (TextView)findViewById(R.id.textViewHighViewer);
         mLowViewerTextView = (TextView)findViewById(R.id.textViewLowViewer);
         mImageViewViewer = (ImageView)findViewById(R.id.imageViewViewer);
+        mDescText = (TextView)findViewById(R.id.descText);
+
+        mImageView = (ImageView)findViewById(R.id.imageView);
 
         urlWeather = "http://api.aerisapi.com/forecasts/11101?client_id=5k40NwxrzVaGeYSxkLlQ1&client_secret=Nrx4miNPZg8KKsA6zPjUeMZWDWBrrHMLpyqXwmm4";
 
@@ -70,14 +81,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mButton = (Button)findViewById(R.id.button);
-        mButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DownloadAsyncWeather downloadAsyncWeather = new DownloadAsyncWeather();
-                downloadAsyncWeather.execute(urlWeather);
-            }
-        });
+        DownloadAsyncWeather downloadAsyncWeather = new DownloadAsyncWeather();
+        downloadAsyncWeather.execute(urlWeather);
+
 
     }
 
@@ -89,17 +95,15 @@ public class MainActivity extends AppCompatActivity {
         String date;
         String icon;
         JSONObject theObject;
-
-
-        ArrayList<Integer> maxArray=new ArrayList<>();
-        ArrayList<Integer> minArray=new ArrayList<>();
-
-        ArrayList<String> dateArray = new ArrayList<>();
+        String desc;
 
         String dateForecast;
         int maxForecast;
         int minForecast;
         String iconForecast;
+        String descForecast;
+
+
 
 
         @Override
@@ -127,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("zeroooo","zero value is:" +zero);
                 JSONArray periods = zero.getJSONArray("periods");
                 Log.d("periods","The periods array is: "+periods);
-                for(int counter=0;counter<periods.length();counter++){
+                for(int counter=1;counter<periods.length();counter++){
                     JSONObject theObject = periods.getJSONObject(counter);
                     Log.d("theobject","this should be an array of data: "+theObject);
 
@@ -135,16 +139,23 @@ public class MainActivity extends AppCompatActivity {
                     maxForecast = theObject.getInt("maxTempF");
                     minForecast = theObject.getInt("minTempF");
                     iconForecast = theObject.getString("icon");
+                    descForecast = theObject.getString("weather");
 
                     if(dateForecast.length()>10){
                         dateForecast = dateForecast.substring(0,10);
                     }
 
-                    Forecast coolGuyForecast = new Forecast("",0,0,null);
+
+
+
+
+                    Forecast coolGuyForecast = new Forecast("",0,0,null,"");
                     coolGuyForecast.setDay(dateForecast);
                     coolGuyForecast.setHigh(maxForecast);
                     coolGuyForecast.setLow(minForecast);
                     coolGuyForecast.setWeatherIcon(iconForecast);
+                    coolGuyForecast.setDesc(descForecast);
+
 
                     mForecasts.add(coolGuyForecast);
 
@@ -158,21 +169,22 @@ public class MainActivity extends AppCompatActivity {
                 minTemp = firstObj.getInt("minTempF");
                 date = firstObj.getString("validTime");
                 icon = firstObj.getString("icon");
+                desc = firstObj.getString("weather");
                 if(date.length()>10){
                     date = date.substring(0,10);
                 }
 
 
 
+
+
                 for(int counter=0;counter<itemsArray.length();counter++){
                     theObject = itemsArray.optJSONObject(counter);
                     Log.d("theObject","the object is: "+theObject);
-//                    dateArray.add(theObject.getString("validTime"));
-//                    maxArray.add(theObject.getInt("maxTempF"));
-//                    minArray.add(theObject.getInt("minTempF"));
                     dateForecast = theObject.getString("validTime");
                     maxForecast = theObject.getInt("maxTempF");
                     minForecast = theObject.getInt("minTempF");
+                    iconForecast = theObject.getString("icon");
                     //mForecasts.add(dateForecast,maxForecast,minForecast,null);
 
 
@@ -193,9 +205,71 @@ public class MainActivity extends AppCompatActivity {
             mHighViewerTextView.setText("High:" + maxTemp);
             mLowViewerTextView.setText("Low:" + minTemp);
             mDayViewerTextView.setText(date);
+            //mImageViewViewer.setImageResource(R.drawable.sunny);
+            mDescText.setText(desc);
 
-            //mImageViewViewer.setImageResource();
+            Log.d("iconnnnn","the icon is: "+icon);
 
+
+            if(icon.equals("am_pcloudy.png")){
+                mImageViewViewer.setImageResource(R.drawable.am_pcloudy);
+            }else if(icon.equals("blizzard.png")) {
+                mImageViewViewer.setImageResource(R.drawable.blizzard);
+            }else if(icon.equals("blowingsnow.png")){
+                mImageViewViewer.setImageResource(R.drawable.blowingsnow);
+            }else if(icon.equals("chancetstorm.png")){
+                mImageViewViewer.setImageResource(R.drawable.chancetstorm);
+            }else if(icon.equals("clear.png")) {
+                mImageViewViewer.setImageResource(R.drawable.clear);
+            }else if(icon.equals("cloudy.png")){
+                mImageViewViewer.setImageResource(R.drawable.cloudy);
+            }else if(icon.equals("drizzle.png")){
+                mImageViewViewer.setImageResource(R.drawable.drizzle);
+            }else if(icon.equals("dust.png")) {
+                mImageViewViewer.setImageResource(R.drawable.dust);
+            }else if(icon.equals("fair.png")){
+                mImageViewViewer.setImageResource(R.drawable.fair);
+            }else if(icon.equals("flurries.png")){
+                mImageViewViewer.setImageResource(R.drawable.flurries);
+            }else if(icon.equals("fog.png")){
+                mImageViewViewer.setImageResource(R.drawable.fog);
+            }else if(icon.equals("freezingrain.png")) {
+                mImageViewViewer.setImageResource(R.drawable.freezingrain);
+            }else if(icon.equals("hazy.png")){
+                mImageViewViewer.setImageResource(R.drawable.hazy);
+            }else if(icon.equals("mcloudy.png")){
+                mImageViewViewer.setImageResource(R.drawable.mcloudy);
+            }else if(icon.equals("mcloudyr.png")){
+                mImageViewViewer.setImageResource(R.drawable.mcloudyr);
+            }else if(icon.equals("mcloudyrw.png")) {
+                mImageViewViewer.setImageResource(R.drawable.mcloudyrw);
+            }else if(icon.equals("mcloudys.png")){
+                mImageViewViewer.setImageResource(R.drawable.mcloudys);
+            }else if(icon.equals("pcloudy.png")){
+                mImageViewViewer.setImageResource(R.drawable.pcloudy);
+            }else if(icon.equals("pcloudyr.png")){
+                mImageViewViewer.setImageResource(R.drawable.pcloudyr);
+            }else if(icon.equals("pcloudys.png")) {
+                mImageViewViewer.setImageResource(R.drawable.pcloudys);
+            }else if(icon.equals("rain.png")){
+                mImageViewViewer.setImageResource(R.drawable.rain);
+            }else if(icon.equals("showers.png")){
+                mImageViewViewer.setImageResource(R.drawable.showers);
+            }else if(icon.equals("sleet.png")){
+                mImageViewViewer.setImageResource(R.drawable.sleet);
+            }else if(icon.equals("snow.png")) {
+                mImageViewViewer.setImageResource(R.drawable.snow);
+            }else if(icon.equals("tstorm.png")){
+                mImageViewViewer.setImageResource(R.drawable.tstorm);
+            }else if(icon.equals("wind.png")) {
+                mImageViewViewer.setImageResource(R.drawable.wind);
+            }else if(icon.equals("sunny.png")) {
+                mImageViewViewer.setImageResource(R.drawable.sunny);
+            }else if(icon.equals("pcloudyt.png")) {
+                mImageViewViewer.setImageResource(R.drawable.pcloudyt);
+            }else if(icon.equals("mcloudyt.png")) {
+                mImageViewViewer.setImageResource(R.drawable.mcloudyt);
+            }
 
 
             mForecastAdapter.notifyDataSetChanged();
@@ -216,5 +290,17 @@ public class MainActivity extends AppCompatActivity {
 
             return builder.toString();
         }
+
+        public int getResId(String resName, Class<?> c) {
+
+            try {
+                Field idField = c.getDeclaredField(resName);
+                return idField.getInt(idField);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return -1;
+            }
+        }
+
     }
 }

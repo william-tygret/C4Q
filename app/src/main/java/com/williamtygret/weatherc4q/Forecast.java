@@ -12,12 +12,17 @@ public class Forecast {
         int mHigh;
         int mLow;
         String mWeatherIcon;
+        String mDesc;
 
-        public Forecast(String day, int high, int low, String weatherIcon){
+
+
+    public Forecast(String day, int high, int low, String weatherIcon, String desc){
             this.mDay = day;
             this.mHigh = high;
             this.mLow = low;
             this.mWeatherIcon = weatherIcon;
+            this.mDesc = desc;
+
         }
         public String toString(){
             return mDay;
@@ -49,5 +54,13 @@ public class Forecast {
         public void setWeatherIcon(String weatherIcon) {
             mWeatherIcon = weatherIcon;
         }
+
+    public String getDesc() {
+        return mDesc;
+    }
+
+    public void setDesc(String desc) {
+        mDesc = desc;
+    }
 
 }
